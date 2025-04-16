@@ -74,7 +74,9 @@ function install_plugin {
     chmod +x ${GIT_PATH}/install.sh
     chmod +x ${GIT_PATH}/uninstall.sh
 
-    mkdir ~/printer_data/config/plugins/filter_monitor
+if [ ! -d "${HOME}/printer_data/config/plugins/filter_monitor" ]; then
+  mkdir -p "${HOME}/printer_data/config/plugins/filter_monitor"
+fi
 
     echo "OK!"
 }
