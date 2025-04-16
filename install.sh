@@ -74,6 +74,8 @@ function install_plugin {
     chmod +x ${GIT_PATH}/install.sh
     chmod +x ${GIT_PATH}/uninstall.sh
 
+    mkdir ~/printer_data/config/plugins/filter_monitor
+
     echo "OK!"
 }
 
