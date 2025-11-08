@@ -126,7 +126,7 @@ class FilterMonitor:
             heaters = self.printer.lookup_object("heaters")
             self.fan = heaters.lookup_heater(self.fan_name)
         elif self.fan_type in FAN_TYPES:
-            self.fan = self.printer.lookup_object("fan", self.fan_name)
+            self.fan = self.printer.lookup_object(self.fan_section, None)
         else:
             self._log_exception("Fan type '%s' is unsupported." % self.fan_type)
 
