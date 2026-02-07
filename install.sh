@@ -50,7 +50,7 @@ function check_download {
 
     if [ ! -d "${GIT_PATH}" ]; then
         echo "[GIT] Cloning repository..."
-        if git -C $gitdirname clone https://github.com/blankhaus/klipper-filter_monitor.git $gitbasename; then
+        if git -C $gitdirname clone https://github.com/ressu/klipper-filter_monitor.git $gitbasename; then
             echo "[GIT] Cloning complete!"
         else
             echo "[GIT] Cloning failed!"

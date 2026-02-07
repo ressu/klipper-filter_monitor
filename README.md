@@ -17,7 +17,7 @@ To install this plugin, first ensure that you already have Klipper, Moonraker, a
 Then, execute the following command over SSH. The script will clone this GitHub repository to your device's home directory, and symlink the required files into the Klipper "extras" folder.
 
 ```
-wget -O - https://raw.githubusercontent.com/blankhaus/klipper-filter_monitor/main/install.sh | bash
+wget -O - https://raw.githubusercontent.com/ressu/klipper-filter_monitor/main/install.sh | bash
 ```
 
 Then, add the following to moonraker.conf to enable automatic updates:
@@ -26,7 +26,7 @@ Then, add the following to moonraker.conf to enable automatic updates:
 [update_manager filter_monitor]
 type: git_repo
 path: ~/klipper-filter_monitor
-origin: https://github.com/blankhaus/klipper-filter_monitor.git
+origin: https://github.com/ressu/klipper-filter_monitor.git
 managed_services: klipper moonraker
 primary_branch: main
 install_script: install.sh
@@ -70,7 +70,7 @@ RESET_FILTER NAME=<filter_name>
 To uninstall this plugin, execute the following command over SSH. The script will remove any symlinked files related to this plugin from the Klipper "extras" and "plugins" folders.
 
 ```
-wget -O - https://raw.githubusercontent.com/blankhaus/klipper-filter_monitor/main/uninstall.sh | bash
+wget -O - https://raw.githubusercontent.com/ressu/klipper-filter_monitor/main/uninstall.sh | bash
 ```
 
 ## Support
