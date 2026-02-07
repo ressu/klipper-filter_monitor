@@ -1,3 +1,9 @@
+# Note about this repository
+
+This is a fork of
+[blankhaus/klipper-filter_monitor](https://github.com/blankhaus/klipper-filter_monitor)
+which seems to have been abandoned by the original author. The changes here are from community contributions to the repository.
+
 # Filter Monitor
 
 This Klipper plugin monitors the runtime of air filters (Nevermore, THE FILTER, etc), and triggers notifications and/or executes G-code when threshold conditions, such as max runtime or lifetime hours, are met. These monitoring checks also occur on pre-defined system events and keep track of total fan runtime.
@@ -69,6 +75,10 @@ wget -O - https://raw.githubusercontent.com/blankhaus/klipper-filter_monitor/mai
 
 ## Support
 
-Feel free to shoot me a message on Discord. You'll find me under **mut3x_** on either the Voron or Klipper servers.
+Since this is a fork of the project, I've removed the original support links
+for contributions. If you want to contribute to the original author, you are
+free to do so using the links in their repository. This way there is no
+confusion to whom the support goes to.
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M3125C21)
+The original repository is
+[blankhaus/klipper-filter_monitor](https://github.com/blankhaus/klipper-filter_monitor#support)
