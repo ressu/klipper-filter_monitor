@@ -4,6 +4,8 @@
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
 
+from __future__ import annotations
+
 import ast
 import csv
 import datetime
@@ -11,6 +13,8 @@ import logging
 import math
 import os
 import time
+
+from typing import TYPE_CHECKING, TypeGuard
 
 SEC_PER_DAY = 86400
 SEC_PER_HOUR = 3600
@@ -34,7 +38,22 @@ COLORS = [
     "warning"
 ]
 
-class FilterMonitor:
+# Set up Klipper type checking stubs, this is needed to include Klipper
+# internals into the type checking without actually having access to the Klipper
+# codebase.
+if TYPE_CHECKING:
+    from klippy import KlipperHost
+    from extras import Fan, Heater
+    _KlipperBase = KlipperHost
+else:
+    _KlipperBase = object
+
+def _is_heater(fan: 'Fan | Heater | None', fan_type: 'str | None') -> 'TypeGuard[Heater]':
+    return fan_type == "heater_generic"
+
+class FilterMonitor(_KlipperBase):
+    fan: Fan|Heater|None
+
     def __init__(self, config):
         self.printer = config.get_printer()
         self.printer.register_event_handler(
@@ -146,10 +165,10 @@ class FilterMonitor:
     def _handle_shutdown(self):
         self._update(stop_timer=True)
 
-    def _handle_restart(self, print_time):
+    def _handle_restart(self, _):
         self._update(stop_timer=True)
 
-    def _handle_idle(self, print_time):
+    def _handle_idle(self, _):
         self._update()
 
     def _handle_ready(self):
@@ -213,12 +232,15 @@ class FilterMonitor:
             self._log_exception("Unable to parse %s" % self.file)
 
     def _monitor(self):
+        if self.fan is None:
+            return
+
         now = time.time()
 
         if self.filter_last_reset is None:
             self.filter_last_reset = now
 
-        if self.fan_type == "heater_generic":
+        if _is_heater(self.fan, self.fan_type):
             self.filter_active = self.fan.last_pwm_value > 0.0
         else:
             status = self.fan.get_status(self.reactor.NOW)
@@ -299,7 +321,10 @@ class FilterMonitor:
             )
         )
 
-    def _format_status(self, extended=False):
+    def _format_status(self, extended=False) -> str:
+        if self.filter_days_r is None:
+            return ""
+
         extended_msg = ""
         if extended:
             extended_msg = (

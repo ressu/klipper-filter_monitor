@@ -12,7 +12,7 @@ This Klipper plugin monitors the runtime of air filters (Nevermore, THE FILTER, 
 
 ## Installation
 
-To install this plugin, first ensure that you already have Klipper, Moonraker, and a WebUI (Mainsail, Fluidd, or Octoprint) installed on your printer. If not, you can use [KIAUH](https://github.com/dw-0/kiauh) to facilitate the process.
+To install this plugin, first ensure that you already have Klipper, Moonraker, and a WebUI (Mainsail, Fluidd, or Octoprint) installed on your printer. Please note that this plugin requires **Python 3.10 or newer**. If not, you can use [KIAUH](https://github.com/dw-0/kiauh) to facilitate the process.
 
 Then, execute the following command over SSH. The script will clone this GitHub repository to your device's home directory, and symlink the required files into the Klipper "extras" folder.
 
