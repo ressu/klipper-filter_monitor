@@ -291,6 +291,12 @@ class FilterMonitor(_KlipperBase):
         except:
             self._log_exception("Unable to write to %s" % self.file)
 
+    def _reset_filter(self):
+        self.filter_last_reset = time.time()
+        self.filter_runtime = 0.0
+        self.filter_reset_count += 1
+        self._update()
+
     def _notify(self):
         self.gcode.respond_info(self._format_status())
 
@@ -380,6 +386,18 @@ class FilterMonitor(_KlipperBase):
             )
         return msg
 
+    def _get_all_filter_monitors(self):
+        """
+        Retrieves all active instances of the FilterMonitor class from the Klipper
+        printer object.
+        """
+        instances = []
+        for name, obj in self.printer.objects.items():
+            if name.startswith('filter_monitor'):
+                if isinstance(obj, self.__class__):
+                    instances.append(obj)
+        return instances
+
     def _log_info(self, msg):
         logging.info(self._format_log(msg))
 
@@ -389,7 +407,7 @@ class FilterMonitor(_KlipperBase):
 
         raise self.printer.command_error(formatted_msg)
 
-    def get_status(self, eventtime):
+    def get_status(self, _):
         return {
             "filter_last_active": self.filter_last_active,
             "filter_last_notified": self.filter_last_notified,
@@ -405,27 +423,85 @@ class FilterMonitor(_KlipperBase):
         }
 
     def cmd_FILTER_STATS(self, gcmd):
-        self._update()
+        name = gcmd.get("NAME", None)
+        target_monitor = self
 
+        if name is None:
+            all_monitors = self._get_all_filter_monitors()
+            if len(all_monitors) == 1:
+                target_monitor = all_monitors[0]
+            else:
+                gcmd.respond_info(
+                    self._format_msg(
+                        "NAME parameter is required when multiple filter_monitor instances are defined.",
+                        color="error"
+                    )
+                )
+                return
+        elif name != self.name:
+            # If a name is provided and it's not the current monitor, find the correct one
+            found_monitor = False
+            for monitor in self._get_all_filter_monitors():
+                if monitor.name == name:
+                    target_monitor = monitor
+                    found_monitor = True
+                    break
+            if not found_monitor:
+                gcmd.respond_info(
+                    self._format_msg(
+                        "Filter '%s' not found." % (name),
+                        color="error"
+                    )
+                )
+                return
+
+        target_monitor._update()
         gcmd.respond_info(
-            self._format_status(
+            target_monitor._format_status(
                 extended=gcmd.get_int("EXTENDED", 0) == 1
             )
         )
 
     def cmd_RESET_FILTER(self, gcmd):
-        if self.filter_active:
+        name = gcmd.get("NAME", None)
+        target_monitor = self
+
+        if name is None:
+            all_monitors = self._get_all_filter_monitors()
+            if len(all_monitors) == 1:
+                target_monitor = all_monitors[0]
+            else:
+                gcmd.respond_info(
+                    self._format_msg(
+                        "NAME parameter is required when multiple filter_monitor instances are defined.",
+                        color="error"
+                    )
+                )
+                return
+        elif name != self.name:
+            found_monitor = False
+            for monitor in self._get_all_filter_monitors():
+                if monitor.name == name:
+                    target_monitor = monitor
+                    found_monitor = True
+                    break
+            if not found_monitor:
+                gcmd.respond_info(
+                    self._format_msg(
+                        "Filter '%s' not found." % (name),
+                        color="error"
+                    )
+                )
+                return
+
+        if target_monitor.filter_active:
             gcmd.respond_info(
-                self._format_msg("can't be reset while active!", color="error")
+                target_monitor._format_msg("can't be reset while active!", color="error")
             )
         else:
-            self.filter_last_reset = time.time()
-            self.filter_runtime = 0.0
-            self.filter_reset_count += 1
-            self._update()
-
+            target_monitor._reset_filter()
             gcmd.respond_info(
-                self._format_msg("reset!", color="success")
+                target_monitor._format_msg("reset!", color="success")
             )
 
 def load_config_prefix(config):
