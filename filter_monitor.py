@@ -391,12 +391,10 @@ class FilterMonitor(_KlipperBase):
         Retrieves all active instances of the FilterMonitor class from the Klipper
         printer object.
         """
-        instances = []
-        for name, obj in self.printer.objects.items():
-            if name.startswith('filter_monitor'):
-                if isinstance(obj, self.__class__):
-                    instances.append(obj)
-        return instances
+        return [
+            obj for _, obj in self.printer.lookup_objects('filter_monitor')
+            if isinstance(obj, FilterMonitor)
+        ]
 
     def _log_info(self, msg):
         logging.info(self._format_log(msg))
