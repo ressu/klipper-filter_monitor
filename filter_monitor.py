@@ -171,7 +171,7 @@ class FilterMonitor(_KlipperBase):
         self._update(stop_timer=True)
 
     def _handle_idle(self, _):
-        self._update()
+        self._update(force_persist=True)
 
     def _handle_ready(self):
         self._update()
@@ -183,7 +183,7 @@ class FilterMonitor(_KlipperBase):
     def _monitor_event(self, event_time):
         return self._update(event_time)
 
-    def _update(self, event_time = None, stop_timer=False, notify=False):
+    def _update(self, event_time=None, stop_timer=False, notify=False, force_persist=False):
         if self.monitor_timer is not None:
             if event_time is None:
                 self.reactor.update_timer(
@@ -200,7 +200,7 @@ class FilterMonitor(_KlipperBase):
         ):
             self._notify()
 
-        self._persist()
+        self._persist(force=stop_timer or force_persist)
 
         if self.monitor_timer is not None:
             if event_time is None and not stop_timer:
@@ -300,7 +300,7 @@ class FilterMonitor(_KlipperBase):
         self.filter_last_reset = time.time()
         self.filter_runtime = 0.0
         self.filter_reset_count += 1
-        self._update()
+        self._update(force_persist=True)
 
     def _notify(self):
         self.gcode.respond_info(self._format_status())
