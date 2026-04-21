@@ -356,7 +356,7 @@ class FilterMonitor(_KlipperBase):
         if percent <= 10.0:
             color = "error"
         elif percent <= 25.0:
-            color = "error"
+            color = "warning"
 
         return self._colorize_msg(
             "%.01f%%" % percent, color
