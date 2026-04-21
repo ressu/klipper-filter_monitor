@@ -31,7 +31,7 @@ FAN_TYPES = [
 COLORS = [
     "primary",
     "secondary",
-    "accent"
+    "accent",
     "info",
     "success",
     "error",
