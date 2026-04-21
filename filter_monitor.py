@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, TypeGuard
 SEC_PER_DAY = 86400
 SEC_PER_HOUR = 3600
 SEC_PER_MIN  = 60
+PERSIST_INTERVAL = 300  # minimum seconds between storage writes
 
 FAN_TYPES = [
     "fan",
@@ -117,6 +118,7 @@ class FilterMonitor(_KlipperBase):
         self.filter_days_r = None
 
         self.monitor_timer = None
+        self.last_persist_time = 0.0
 
         self.gcode.register_mux_command(
             "FILTER_STATS",
@@ -276,7 +278,9 @@ class FilterMonitor(_KlipperBase):
             self.filter_runtime_r = max(runtime_d, 0)
             self.filter_days_r = max(days_d, 0)
 
-    def _persist(self):
+    def _persist(self, force=False):
+        if not force and time.time() - self.last_persist_time < PERSIST_INTERVAL:
+            return
         try:
             with open(self.file, "w", newline="", encoding="utf-8") as f:
                 csv_writer = csv.writer(f, delimiter=",")
@@ -286,10 +290,11 @@ class FilterMonitor(_KlipperBase):
                     "%f" % self.filter_total_runtime,
                     "%d" % self.filter_reset_count
                 ])
+            self.last_persist_time = time.time()
         except IOError as e:
-            self._log_exception("%s %s" % (self.file, str(e)))
-        except:
-            self._log_exception("Unable to write to %s" % self.file)
+            logging.error(self._format_log("%s %s" % (self.file, str(e))))
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logging.error(self._format_log("Unable to write to %s: %s" % (self.file, repr(e))))
 
     def _reset_filter(self):
         self.filter_last_reset = time.time()
