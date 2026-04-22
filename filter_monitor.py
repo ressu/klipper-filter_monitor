@@ -420,6 +420,15 @@ class FilterMonitor(_KlipperBase):
             "filter_days_r": self.filter_days_r
         }
 
+    def _resolve_monitor(self, gcmd) -> 'tuple[FilterMonitor | None, str | None]':
+        name = gcmd.get("NAME", None)
+        if name is None:
+            all_monitors = self._get_all_filter_monitors()
+            if len(all_monitors) == 1:
+                return all_monitors[0], None
+            return None, "NAME parameter is required when multiple filter_monitor instances are defined."
+        return self, None
+
     def cmd_FILTER_STATS(self, gcmd):
         name = gcmd.get("NAME", None)
         target_monitor = self
