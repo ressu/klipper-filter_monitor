@@ -430,85 +430,30 @@ class FilterMonitor(_KlipperBase):
         return self, None
 
     def cmd_FILTER_STATS(self, gcmd):
-        name = gcmd.get("NAME", None)
-        target_monitor = self
+        monitor, err = self._resolve_monitor(gcmd)
+        if monitor is None:
+            gcmd.respond_info(self._format_msg(err, color="error"))
+            return
 
-        if name is None:
-            all_monitors = self._get_all_filter_monitors()
-            if len(all_monitors) == 1:
-                target_monitor = all_monitors[0]
-            else:
-                gcmd.respond_info(
-                    self._format_msg(
-                        "NAME parameter is required when multiple filter_monitor instances are defined.",
-                        color="error"
-                    )
-                )
-                return
-        elif name != self.name:
-            # If a name is provided and it's not the current monitor, find the correct one
-            found_monitor = False
-            for monitor in self._get_all_filter_monitors():
-                if monitor.name == name:
-                    target_monitor = monitor
-                    found_monitor = True
-                    break
-            if not found_monitor:
-                gcmd.respond_info(
-                    self._format_msg(
-                        "Filter '%s' not found." % (name),
-                        color="error"
-                    )
-                )
-                return
-
-        target_monitor._update()
+        monitor._update()
         gcmd.respond_info(
-            target_monitor._format_status(
-                extended=gcmd.get_int("EXTENDED", 0) == 1
-            )
+            monitor._format_status(extended=gcmd.get_int("EXTENDED", 0) == 1)
         )
 
     def cmd_RESET_FILTER(self, gcmd):
-        name = gcmd.get("NAME", None)
-        target_monitor = self
+        monitor, err = self._resolve_monitor(gcmd)
+        if monitor is None:
+            gcmd.respond_info(self._format_msg(err, color="error"))
+            return
 
-        if name is None:
-            all_monitors = self._get_all_filter_monitors()
-            if len(all_monitors) == 1:
-                target_monitor = all_monitors[0]
-            else:
-                gcmd.respond_info(
-                    self._format_msg(
-                        "NAME parameter is required when multiple filter_monitor instances are defined.",
-                        color="error"
-                    )
-                )
-                return
-        elif name != self.name:
-            found_monitor = False
-            for monitor in self._get_all_filter_monitors():
-                if monitor.name == name:
-                    target_monitor = monitor
-                    found_monitor = True
-                    break
-            if not found_monitor:
-                gcmd.respond_info(
-                    self._format_msg(
-                        "Filter '%s' not found." % (name),
-                        color="error"
-                    )
-                )
-                return
-
-        if target_monitor.filter_active:
+        if monitor.filter_active:
             gcmd.respond_info(
-                target_monitor._format_msg("can't be reset while active!", color="error")
+                monitor._format_msg("can't be reset while active!", color="error")
             )
         else:
-            target_monitor._reset_filter()
+            monitor._reset_filter()
             gcmd.respond_info(
-                target_monitor._format_msg("reset!", color="success")
+                monitor._format_msg("reset!", color="success")
             )
 
 def load_config_prefix(config):
