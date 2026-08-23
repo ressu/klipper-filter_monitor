@@ -8,4 +8,8 @@ dependencies = []
 [dependency-groups]
 dev = [
     "pylint>=4.0.5",
+    "pyrefly>=1.2.0",
 ]
+
+[tool.pyrefly]
+search_path = ["stubs"]

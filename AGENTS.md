@@ -13,10 +13,10 @@ This is a Klipper 3D printer firmware plugin (`filter_monitor.py`) that monitors
 uv run pylint filter_monitor.py
 
 # Type-check the plugin (uses stubs/ for Klipper type definitions)
-uv run mypy filter_monitor.py --no-namespace-packages
+uv run pyrefly check filter_monitor.py
 ```
 
-Both commands must exit cleanly with no errors. mypy errors are never acceptable — the stubs exist specifically to validate the plugin against Klipper internals.
+Both commands must exit cleanly with no errors. Type errors are never acceptable — the stubs exist specifically to validate the plugin against Klipper internals.
 
 There is no build step. The plugin runs inside Klipper's Python environment on the printer.
 
